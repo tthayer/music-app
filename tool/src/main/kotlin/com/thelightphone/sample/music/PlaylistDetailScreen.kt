@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,8 +82,10 @@ class PlaylistDetailScreen(
             }
 
             // Playlist management lives in the bottom-left action slot, matching
-            // the standard LightOS action-bar arrangement.
+            // the standard LightOS action-bar arrangement. Trim the bar's height
+            // a touch so it sits in proportion to the lone gear icon.
             LightBottomBar(
+                modifier = Modifier.height(3.5f.gridUnitsAsDp()),
                 items = listOf(
                     LightBarButton.LightIcon(
                         icon = LightIcons.SETTINGS,
