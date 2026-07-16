@@ -26,23 +26,26 @@ class SongListScreen(
     override fun Content() {
         val playback by MusicPlayer.state.collectAsState()
 
-        MusicScaffold(title = title, onBack = { goBack() }) {
-            LightScrollView(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 1f.gridUnitsAsDp()),
-            ) {
-                tracks.forEachIndexed { index, track ->
-                    TrackRow(
-                        title = track.title,
-                        secondary = track.artist,
-                        isCurrent = playback.current?.uri == track.uri,
-                        onClick = {
-                            MusicPlayer.play(tracks, startIndex = index)
-                            navigateTo({ NowPlayingScreen(it) })
-                        },
-                    )
+        AddToPlaylistHost { openAdd ->
+            MusicScaffold(title = title, onBack = { goBack() }) {
+                LightScrollView(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 1f.gridUnitsAsDp()),
+                ) {
+                    tracks.forEachIndexed { index, track ->
+                        TrackRow(
+                            title = track.title,
+                            secondary = track.artist,
+                            isCurrent = playback.current?.uri == track.uri,
+                            onClick = {
+                                MusicPlayer.play(tracks, startIndex = index)
+                                navigateTo({ NowPlayingScreen(it) })
+                            },
+                            onLongClick = { openAdd(listOf(track), track.title) },
+                        )
+                    }
                 }
             }
         }

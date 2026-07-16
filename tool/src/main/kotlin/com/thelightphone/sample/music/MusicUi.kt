@@ -1,6 +1,8 @@
 package com.thelightphone.sample.music
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -85,6 +87,26 @@ fun MusicScaffold(
     }
 }
 
+/**
+ * A no-indication clickable that also fires [onLongClick] on a long press.
+ * Mirrors [lightClickable]; falls back to a plain click when [onLongClick] is
+ * null.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+fun Modifier.lightCombinedClickable(
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+): Modifier = if (onLongClick == null) {
+    lightClickable(onClick = onClick)
+} else {
+    combinedClickable(
+        interactionSource = null,
+        indication = null,
+        onLongClick = onLongClick,
+        onClick = onClick,
+    )
+}
+
 /** A drill-down menu row: label on the left, chevron on the right. */
 @Composable
 fun MenuRow(
@@ -92,11 +114,12 @@ fun MenuRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     leadingIcon: LightIconConfiguration? = null,
+    onLongClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .lightClickable(onClick = onClick)
+            .lightCombinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(vertical = 0.75f.gridUnitsAsDp()),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -126,11 +149,12 @@ fun TrackRow(
     isCurrent: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .lightClickable(onClick = onClick)
+            .lightCombinedClickable(onClick = onClick, onLongClick = onLongClick)
             .padding(vertical = 0.6f.gridUnitsAsDp()),
         verticalAlignment = Alignment.CenterVertically,
     ) {

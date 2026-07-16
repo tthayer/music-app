@@ -40,20 +40,28 @@ class GroupBrowseScreen(
 
     @Composable
     override fun Content() {
-        MusicScaffold(title = kind.title, onBack = { goBack() }) {
-            LightScrollView(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 1f.gridUnitsAsDp()),
-            ) {
-                groups().forEach { group ->
-                    MenuRow(
-                        label = group,
-                        onClick = {
-                            navigateTo({ SongListScreen(it, group, tracksIn(group)) })
-                        },
-                    )
+        AddToPlaylistHost { openAdd ->
+            MusicScaffold(title = kind.title, onBack = { goBack() }) {
+                LightScrollView(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 1f.gridUnitsAsDp()),
+                ) {
+                    groups().forEach { group ->
+                        MenuRow(
+                            label = group,
+                            onClick = {
+                                navigateTo({ SongListScreen(it, group, tracksIn(group)) })
+                            },
+                            // Long-press an album to add all its tracks to a playlist.
+                            onLongClick = if (kind == BrowseKind.Album) {
+                                { openAdd(tracksIn(group), group) }
+                            } else {
+                                null
+                            },
+                        )
+                    }
                 }
             }
         }

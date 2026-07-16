@@ -90,6 +90,9 @@ class MusicHomeScreen(sealedActivity: SealedLightActivity) :
         super.willShow()
         // Hardware volume keys should control playback volume throughout the tool.
         lightContext.useMediaVolumeKeys()
+        // Bind + load persisted playlists once so the overlay and Playlists
+        // screen have them ready.
+        PlaylistStore.ensureLoaded(lightContext.dataStore)
     }
 
     @Composable
@@ -140,6 +143,11 @@ class MusicHomeScreen(sealedActivity: SealedLightActivity) :
                         MenuRow(
                             label = "Songs",
                             onClick = { navigateTo({ SongListScreen(it, "Songs", tracks) }) },
+                        )
+                        MenuRow(
+                            label = "Playlists",
+                            leadingIcon = LightIcons.LIST,
+                            onClick = { navigateTo({ PlaylistsScreen(it) }) },
                         )
                         MenuRow(
                             label = "Shuffle Songs",
