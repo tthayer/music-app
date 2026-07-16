@@ -1,10 +1,10 @@
 <p align="center">
-  <video src="https://github.com/tthayer/music-app/raw/main/docs/demo.mp4" width="300" controls muted playsinline></video>
+  <img src="docs/demo.gif" alt="The music tool running on a Light Phone III: browsing the on-device library and playing back over the SDK's audio APIs" width="300">
 </p>
 
 <sub>The music tool running on a Light Phone III — browsing the on-device
-library and playing back over the SDK's audio APIs. If the video doesn't play
-inline, <a href="docs/demo.mp4">download it here</a>.</sub>
+library and playing back over the SDK's audio APIs. Full-quality video:
+<a href="docs/demo.mp4">docs/demo.mp4</a>.</sub>
 
 # music-app
 
