@@ -26,6 +26,20 @@ if (localPropertiesFile.exists()) {
 val ghUsername = localProperties.getProperty("gpr.user") ?: System.getenv("GH_PACKAGES_USER")
 val ghPassword = localProperties.getProperty("gpr.key") ?: System.getenv("GH_PACKAGES_TOKEN")
 
+// Opt-in to also graft the SDK's LightOS emulator app (for running the tool on
+// a desktop Android emulator). Off by default so Light's tool-only build/review
+// pipeline and the release workflow never configure it. Enable with any of:
+//   ./gradlew -PwithEmulator ...        (per-invocation; bare flag is enough)
+//   withEmulator=true   in local.properties   (persistent, local)
+//   LIGHT_WITH_EMULATOR=true in the environment
+// A gradle property counts as enabled unless it is explicitly "false", so a
+// bare `-PwithEmulator` (which Gradle sets to "") turns it on.
+val emulatorProp = startParameter.projectProperties["withEmulator"]
+val withEmulator =
+    (emulatorProp != null && !emulatorProp.equals("false", ignoreCase = true)) ||
+        localProperties.getProperty("withEmulator")?.toBoolean() == true ||
+        System.getenv("LIGHT_WITH_EMULATOR")?.toBoolean() == true
+
 dependencyResolutionManagement {
     repositories {
         google()
@@ -74,3 +88,14 @@ project(":sdk:client").projectDir = file("light-sdk/sdk/client")
 // Light's build/review pipeline extracts (tool/build.gradle.kts,
 // tool/lighttool.toml, tool/src/main/**).
 include(":tool")
+
+// Dev-only: the LightOS emulator app and its server, grafted from the same
+// submodule when `withEmulator` is set. Lets you install the emulator + tool on
+// a desktop Android emulator and exercise the tool end-to-end. :sdk:emulator
+// needs :sdk:server (which only needs :sdk:shared, already included above).
+if (withEmulator) {
+    include(":sdk:server")
+    project(":sdk:server").projectDir = file("light-sdk/sdk/server")
+    include(":sdk:emulator")
+    project(":sdk:emulator").projectDir = file("light-sdk/sdk/emulator")
+}

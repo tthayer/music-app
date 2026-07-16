@@ -61,6 +61,37 @@ or as env vars `GH_PACKAGES_USER` / `GH_PACKAGES_TOKEN`. Then:
 The APK is signed with the shared Light dev keystore (from the submodule) for
 local sideloading. Light's build service re-signs with its own key.
 
+## Running in the LightOS emulator (development)
+
+To exercise the tool end-to-end on a desktop Android emulator you also need the
+SDK's **LightOS emulator** app, which hosts the tool the way `com.lightos` does
+on real hardware. Its source already lives in the `light-sdk/` submodule
+(`light-sdk/sdk/emulator`) — it is **not** a separate submodule — so it is
+grafted into this build on demand behind the `withEmulator` flag. It stays off
+by default so the release workflow and Light's tool-only review pipeline never
+build it.
+
+```bash
+# One-off (bare flag is enough):
+./gradlew -PwithEmulator :sdk:emulator:assembleDebug :tool:assembleDebug
+
+# Or persist it for your checkout by adding to local.properties:
+#   withEmulator=true
+```
+
+To actually run it:
+
+1. Create an AVD that approximates an LP3 (see the SDK's own README) and, for
+   push/permission features, run the emulator as a **system app** — that needs
+   `light-sdk/sdk/emulator/keys/platform.jks` (see the SDK repo for how to
+   generate it). Without the keystore the emulator still builds; it just can't
+   run as uid 1000.
+2. Install both APKs (`:sdk:emulator` and `:tool`) on the emulator.
+3. Point the tool at the emulator instead of hardware by setting
+   `serverPackage = "com.thelightphone.sdk.emulator"` in `tool/lighttool.toml`
+   for your local build (the committed value is `com.lightos` for release —
+   don't commit the emulator value).
+
 ## Bumping the SDK
 
 ```bash
