@@ -1,11 +1,3 @@
-# music-app
-
-A standalone [Light Phone III](https://www.thelightphone.com/) tool: an
-iPod-style music player that browses the device's on-device library over
-`MediaStore` and plays it back. It is a thin, self-contained repo built against
-the upstream **Light SDK**, and it is laid out to drop straight into Light's
-tool build / review pipeline.
-
 <p align="center">
   <video src="https://github.com/tthayer/music-app/raw/main/docs/demo.mp4" width="300" controls muted playsinline></video>
 </p>
@@ -13,6 +5,14 @@ tool build / review pipeline.
 <sub>The music tool running on a Light Phone III — browsing the on-device
 library and playing back over the SDK's audio APIs. If the video doesn't play
 inline, <a href="docs/demo.mp4">download it here</a>.</sub>
+
+# music-app
+
+A standalone [Light Phone III](https://www.thelightphone.com/) tool: an
+iPod-style music player that browses the device's on-device library over
+`MediaStore` and plays it back. It is a thin, self-contained repo built against
+the upstream **Light SDK**, and it is laid out to drop straight into Light's
+tool build / review pipeline.
 
 ## Layout
 
