@@ -1,0 +1,9 @@
+[tool]
+id = "com.thelightphone.musicapp"
+label = "Music"
+versionCode = 1
+versionName = "1.0"
+# Reads the device's music library via MediaStore.
+permissions = ["android.permission.READ_MEDIA_AUDIO"]
+# com.lightos on real hardware; com.thelightphone.sdk.emulator on the emulator.
+serverPackage = "com.lightos"
