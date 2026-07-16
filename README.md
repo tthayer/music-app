@@ -3,8 +3,7 @@
 </p>
 
 <sub>The music tool running on a Light Phone III — browsing the on-device
-library and playing back over the SDK's audio APIs. Full-quality video:
-<a href="docs/demo.mp4">docs/demo.mp4</a>.</sub>
+library and playing back over the SDK's audio APIs.</sub>
 
 # music-app
 
