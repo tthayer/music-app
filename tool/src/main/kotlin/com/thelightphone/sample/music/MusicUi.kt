@@ -66,6 +66,7 @@ fun MusicScaffold(
     title: String,
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    rightButton: LightBarButton? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val themeColors by LightThemeController.colors.collectAsState()
@@ -81,10 +82,22 @@ fun MusicScaffold(
                     LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = it)
                 },
                 center = LightTopBarCenter.Text(title),
+                rightButton = rightButton,
             )
             content()
         }
     }
+}
+
+/**
+ * Wraps [content] in the app's theme without the top-bar chrome — for screens
+ * (like the keyboard name entry) that draw their own bar but still need
+ * [LightThemeTokens] resolved.
+ */
+@Composable
+fun MusicThemed(content: @Composable () -> Unit) {
+    val themeColors by LightThemeController.colors.collectAsState()
+    LightTheme(colors = themeColors) { content() }
 }
 
 /**

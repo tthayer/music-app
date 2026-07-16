@@ -98,8 +98,11 @@ private fun AddToPlaylistOverlay(request: AddRequest, onDismiss: () -> Unit) {
                 )
 
                 AddStep.NewName -> PlaylistNameEntry(
+                    title = "New Playlist",
+                    submitLabel = "Create",
+                    initialName = "",
                     onCancel = onDismiss,
-                    onCreate = { name ->
+                    onSubmit = { name ->
                         PlaylistStore.createPlaylist(name, request.tracks)
                         onDismiss()
                     },
@@ -186,12 +189,19 @@ private fun ColumnScope.ExistingPicker(
 /**
  * Full-screen playlist-name entry with the standard LP3 keyboard. Mirrors the
  * SDK's `LightTextInputEditor` but cancels with an 'X' ([LightIcons.CLOSE])
- * rather than a back arrow, per the requested flow. "Create" is disabled (a
- * no-op) until the name is non-blank.
+ * rather than a back arrow, per the requested flow. Used both to name a new
+ * playlist and to rename an existing one; the submit button is a no-op until
+ * the name is non-blank.
  */
 @Composable
-private fun PlaylistNameEntry(onCreate: (String) -> Unit, onCancel: () -> Unit) {
-    val state = rememberTextFieldState()
+fun PlaylistNameEntry(
+    title: String,
+    submitLabel: String,
+    initialName: String,
+    onCancel: () -> Unit,
+    onSubmit: (String) -> Unit,
+) {
+    val state = rememberTextFieldState(initialName)
     val keyboardCallback = remember(state) { PlaylistKeyboardCallback(state) }
     val optionsFlow = remember { MutableStateFlow(defaultKeyboardOptions()) }
     val keyboardViewModel = remember(keyboardCallback) {
@@ -215,7 +225,7 @@ private fun PlaylistNameEntry(onCreate: (String) -> Unit, onCancel: () -> Unit) 
                 onClick = onCancel,
                 contentDescription = "Cancel",
             ),
-            center = LightTopBarCenter.Text("New Playlist"),
+            center = LightTopBarCenter.Text(title),
             modifier = Modifier.padding(bottom = 1f.gridUnitsAsDp()),
         )
 
@@ -241,10 +251,10 @@ private fun PlaylistNameEntry(onCreate: (String) -> Unit, onCancel: () -> Unit) 
         LightBottomBar(
             items = listOf(
                 LightBarButton.Text(
-                    text = "Create",
+                    text = submitLabel,
                     onClick = {
                         val trimmed = state.text.toString().trim()
-                        if (trimmed.isNotEmpty()) onCreate(trimmed)
+                        if (trimmed.isNotEmpty()) onSubmit(trimmed)
                     },
                 ),
             ),

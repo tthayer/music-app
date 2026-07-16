@@ -29,7 +29,6 @@ class PlaylistsScreen(
     @Composable
     override fun Content() {
         val playlists by PlaylistStore.playlists.collectAsState()
-        val library by MusicLibrary.tracks.collectAsState()
 
         MusicScaffold(title = "Playlists", onBack = { goBack() }) {
             if (playlists.isEmpty()) {
@@ -55,10 +54,7 @@ class PlaylistsScreen(
                     playlists.forEach { playlist ->
                         MenuRow(
                             label = playlist.name,
-                            onClick = {
-                                val tracks = playlist.resolveTracks(library)
-                                navigateTo({ SongListScreen(it, playlist.name, tracks) })
-                            },
+                            onClick = { navigateTo({ PlaylistDetailScreen(it, playlist.id) }) },
                         )
                     }
                 }

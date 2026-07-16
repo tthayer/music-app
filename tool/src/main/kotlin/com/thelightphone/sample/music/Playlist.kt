@@ -92,6 +92,32 @@ object PlaylistStore {
         }
     }
 
+    /** Renames the playlist with [playlistId]. A blank name is ignored. */
+    fun renamePlaylist(playlistId: String, name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        mutate { current ->
+            current.map { if (it.id == playlistId) it.copy(name = trimmed) else it }
+        }
+    }
+
+    /** Removes [tracks] from the playlist with [playlistId]. */
+    fun removeFromPlaylist(playlistId: String, tracks: List<Track>) = mutate { current ->
+        val removals = tracks.map { it.uri.toString() }.toSet()
+        current.map { playlist ->
+            if (playlist.id != playlistId) {
+                playlist
+            } else {
+                playlist.copy(trackUris = playlist.trackUris.filterNot { it in removals })
+            }
+        }
+    }
+
+    /** Deletes the playlist with [playlistId] entirely. */
+    fun deletePlaylist(playlistId: String) = mutate { current ->
+        current.filterNot { it.id == playlistId }
+    }
+
     private fun mutate(transform: (List<Playlist>) -> List<Playlist>) {
         val next = transform(_playlists.value)
         _playlists.value = next
