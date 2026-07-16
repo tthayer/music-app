@@ -66,7 +66,6 @@ fun MusicScaffold(
     title: String,
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    rightButton: LightBarButton? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val themeColors by LightThemeController.colors.collectAsState()
@@ -82,7 +81,6 @@ fun MusicScaffold(
                     LightBarButton.LightIcon(icon = LightIcons.BACK, onClick = it)
                 },
                 center = LightTopBarCenter.Text(title),
-                rightButton = rightButton,
             )
             content()
         }

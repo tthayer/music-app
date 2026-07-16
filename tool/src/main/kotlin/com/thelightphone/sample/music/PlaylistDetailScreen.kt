@@ -56,15 +56,7 @@ class PlaylistDetailScreen(
 
         val tracks = playlist.resolveTracks(library)
 
-        MusicScaffold(
-            title = playlist.name,
-            onBack = { goBack() },
-            rightButton = LightBarButton.LightIcon(
-                icon = LightIcons.SETTINGS,
-                onClick = { navigateTo({ PlaylistSettingsScreen(it, playlistId) }) },
-                contentDescription = "Playlist settings",
-            ),
-        ) {
+        MusicScaffold(title = playlist.name, onBack = { goBack() }) {
             if (tracks.isEmpty()) {
                 CenteredHint("This playlist is empty.\nLong-press a song or album to add to it.")
             } else {
@@ -87,6 +79,19 @@ class PlaylistDetailScreen(
                     }
                 }
             }
+
+            // Playlist management lives in the bottom-left action slot, matching
+            // the standard LightOS action-bar arrangement.
+            LightBottomBar(
+                items = listOf(
+                    LightBarButton.LightIcon(
+                        icon = LightIcons.SETTINGS,
+                        onClick = { navigateTo({ PlaylistSettingsScreen(it, playlistId) }) },
+                        contentDescription = "Playlist settings",
+                    ),
+                    null,
+                ),
+            )
         }
     }
 }
