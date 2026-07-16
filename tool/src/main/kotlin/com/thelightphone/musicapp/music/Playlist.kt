@@ -1,4 +1,4 @@
-package com.thelightphone.sample.music
+package com.thelightphone.musicapp.music
 
 import android.net.Uri
 import androidx.datastore.core.DataStore

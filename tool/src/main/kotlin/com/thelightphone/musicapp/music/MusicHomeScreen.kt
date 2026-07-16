@@ -1,4 +1,4 @@
-package com.thelightphone.sample.music
+package com.thelightphone.musicapp.music
 
 import android.Manifest
 import androidx.compose.foundation.layout.Box

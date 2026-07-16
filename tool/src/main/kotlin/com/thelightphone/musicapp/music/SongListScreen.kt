@@ -1,4 +1,4 @@
-package com.thelightphone.sample.music
+package com.thelightphone.musicapp.music
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
