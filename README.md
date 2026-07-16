@@ -1,9 +1,10 @@
 <p align="center">
-  <img src="docs/demo.gif" alt="The music tool running on a Light Phone III: browsing the on-device library and playing back over the SDK's audio APIs" width="300">
+  <img src="docs/demo.gif" alt="The music tool running on a Light Phone III: creating a playlist from an album, opening it and its management menu, and playing back over the SDK's audio APIs" width="300">
 </p>
 
 <sub>The music tool running on a Light Phone III — browsing the on-device
-library and playing back over the SDK's audio APIs.</sub>
+library, building and managing playlists, and playing back over the SDK's
+audio APIs.</sub>
 
 # music-app
 
