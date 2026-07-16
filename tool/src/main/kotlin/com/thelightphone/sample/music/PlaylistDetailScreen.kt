@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,18 +80,16 @@ class PlaylistDetailScreen(
                 }
             }
 
-            // Playlist management lives in the bottom-left action slot, matching
-            // the standard LightOS action-bar arrangement. Trim the bar's height
-            // a touch so it sits in proportion to the lone gear icon.
-            LightBottomBar(
-                modifier = Modifier.height(3.5f.gridUnitsAsDp()),
-                items = listOf(
-                    LightBarButton.LightIcon(
-                        icon = LightIcons.SETTINGS,
-                        onClick = { navigateTo({ PlaylistSettingsScreen(it, playlistId) }) },
-                        contentDescription = "Playlist settings",
-                    ),
-                    null,
+            // Playlist management: a settings gear in the bottom-left. Rendered
+            // with LightTopBar (mirrored to the bottom) rather than LightBottomBar
+            // so the gear's left inset and vertical centering exactly match the
+            // back arrow in the top bar — LightBottomBar uses a wider inset and a
+            // top margin that would skew a lone icon.
+            LightTopBar(
+                leftButton = LightBarButton.LightIcon(
+                    icon = LightIcons.SETTINGS,
+                    onClick = { navigateTo({ PlaylistSettingsScreen(it, playlistId) }) },
+                    contentDescription = "Playlist settings",
                 ),
             )
         }
