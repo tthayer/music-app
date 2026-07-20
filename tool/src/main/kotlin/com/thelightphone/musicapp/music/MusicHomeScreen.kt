@@ -90,6 +90,8 @@ class MusicHomeScreen(sealedActivity: SealedLightActivity) :
         super.willShow()
         // Hardware volume keys should control playback volume throughout the tool.
         lightContext.useMediaVolumeKeys()
+        // Surface playback on the lock screen + headset/Bluetooth transport keys.
+        MusicPlayer.enableLockScreenControls(lightContext)
         // Bind + load persisted playlists once so the overlay and Playlists
         // screen have them ready.
         PlaylistStore.ensureLoaded(lightContext.dataStore)

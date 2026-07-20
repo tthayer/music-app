@@ -3,6 +3,11 @@ package com.thelightphone.musicapp.music
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
+import com.thelightphone.sdk.LightMediaControls
+import com.thelightphone.sdk.LightMediaSession
+import com.thelightphone.sdk.LightNowPlaying
+import com.thelightphone.sdk.LightPlaybackStatus
+import com.thelightphone.sdk.SealedLightContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,6 +53,11 @@ object MusicPlayer {
     private var orderPos: Int = 0
     private var shuffle: Boolean = false
     private var failuresThisStart: Int = 0
+    private var lockScreenEnabled: Boolean = false
+    // True once the queue has run out (vs merely paused). Lets the lock-screen
+    // mirror tear the session/foreground-service down when playback is *done*,
+    // while a pause keeps it so the user can resume from the lock screen.
+    private var playbackEnded: Boolean = false
 
     /** Plays [tracks], beginning at [startIndex] (or a fresh shuffle of the set). */
     fun play(tracks: List<Track>, startIndex: Int, shuffle: Boolean = false) {
@@ -63,6 +73,55 @@ object MusicPlayer {
 
     /** Shuffle-plays the entire supplied set from the main menu. */
     fun shuffleAll(tracks: List<Track>) = play(tracks, startIndex = 0, shuffle = true)
+
+    /**
+     * Mirrors playback to the lock screen / system media controls via the SDK's
+     * [LightMediaSession], and routes the transport buttons back to this engine.
+     * Call once (from the initial screen); repeat calls only refresh the bound
+     * context. Requires FOREGROUND_SERVICE, FOREGROUND_SERVICE_MEDIA_PLAYBACK,
+     * and POST_NOTIFICATIONS in lighttool.toml.
+     */
+    fun enableLockScreenControls(lightContext: SealedLightContext) {
+        LightMediaSession.attach(lightContext)
+        if (lockScreenEnabled) return
+        lockScreenEnabled = true
+
+        LightMediaSession.setControls(object : LightMediaControls {
+            // The lock-screen play/pause button is contextual, so both map to the
+            // same toggle the in-app UI uses.
+            override fun onPlay() = togglePlayPause()
+            override fun onPause() = togglePlayPause()
+            override fun onStop() = togglePlayPause()
+            override fun onNext() = next()
+            override fun onPrevious() = previous()
+            override fun onSeekTo(positionMs: Long) = seekTo(positionMs.toInt())
+        })
+
+        // One observer of engine state → media session, capturing every change
+        // (play/pause, track change, position ticks, queue end) in a single place.
+        scope.launch {
+            state.collect { s ->
+                val track = s.current
+                if (track == null || playbackEnded) {
+                    LightMediaSession.release()
+                    return@collect
+                }
+                LightMediaSession.update(
+                    LightNowPlaying(
+                        title = track.title,
+                        artist = track.artist.takeUnless { it.isBlank() || it == UNKNOWN_ARTIST },
+                        durationMs = if (s.durationMs > 0) s.durationMs.toLong() else track.durationMs,
+                        hasNext = s.queuePosition < s.queueSize - 1,
+                        hasPrevious = s.queuePosition > 0,
+                    ),
+                    LightPlaybackStatus(
+                        isPlaying = s.isPlaying,
+                        positionMs = s.positionMs.toLong(),
+                    ),
+                )
+            }
+        }
+    }
 
     fun togglePlayPause() {
         val mp = player
@@ -198,6 +257,7 @@ object MusicPlayer {
     private fun finishQueue() {
         stopTicker()
         runCatching { player?.seekTo(0) }
+        playbackEnded = true
         _state.update { it.copy(isPlaying = false, positionMs = 0) }
     }
 
@@ -223,6 +283,8 @@ object MusicPlayer {
         runCatching { mp.currentPosition }.getOrDefault(0)
 
     private fun publish() {
+        // Any publish means we're actively playing/paused on a track, not ended.
+        playbackEnded = false
         val mp = player
         val track = currentTrack()
         _state.update {
